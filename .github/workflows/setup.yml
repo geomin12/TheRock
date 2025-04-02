@@ -43,7 +43,7 @@ jobs:
           # We need the parent commit to do a diff
           fetch-depth: 2
 
-      - name: "Adding labels"
+      - name: "Adding default PR labels"
         if: ${{ github.event.action == 'opened' && github.event.issue.pull_request }} # run if this is a PR and PR was opened
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
