@@ -48,20 +48,6 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  add_default_targets_for_pr:
-    name: "Add default targets for pull request"
-    if: ${{ github.event.action == 'opened' }} # run if this is a PR and PR was opened
-    runs-on: ubuntu-24.04
-    env:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      PR_NUMBER: ${{ github.event.number }}
-    steps:
-      - name: "Adding labels"
-        run: |
-          gh pr edit ${PR_NUMBER} --add-label "gfx94X-linux"
-          gh pr edit ${PR_NUMBER} --add-label "gfx110X-linux"
-          gh pr edit ${PR_NUMBER} --add-label "gfx110X-windows"
-
   setup:
     uses: ./.github/workflows/setup.yml
 
