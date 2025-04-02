@@ -32,7 +32,6 @@ on:
   # TODO (geo): improve pull request experience, whether with labels or comments
   pull_request:
     types:
-      - pushed
       - labeled
       - opened
 
