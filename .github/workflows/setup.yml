@@ -43,7 +43,7 @@ jobs:
           fetch-depth: 2
 
       - name: "Adding default PR labels"
-        if: ${{ github.event.action == 'opened' && github.event.issue.pull_request }} # run if this is a PR and PR was opened
+        if: ${{ github.event.action == 'opened' && github.event.pull_request }} # run if this is a PR and PR was opened
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_NUMBER: ${{ github.event.number }}
@@ -53,7 +53,7 @@ jobs:
           gh pr edit ${PR_NUMBER} --add-label "gfx110X-windows"
 
       - name: Set PR_LABELS variable
-        if: ${{ github.event.issue.pull_request }} # only set PR labels var if this is a pull request
+        if: ${{ github.event.pull_request }} # only set PR labels var if this is a pull request
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_NUMBER: ${{ github.event.number }}
