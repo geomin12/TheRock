@@ -206,7 +206,10 @@ amdgpu_family_info_matrix = {
 def get_pr_labels(args) -> List[str]:
     """Gets a list of labels applied to a pull request."""
     labels = json.loads(args.get("pr_labels"))
-    return labels
+    applied_labels = []
+    for label in labels:
+        applied_labels.extend(label["name"])
+    return applied_labels
 
 
 def matrix_generator(
