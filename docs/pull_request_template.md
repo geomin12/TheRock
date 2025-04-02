@@ -1,11 +1,6 @@
 <b><u>Proposed changes</u></b>
 
-
-
 <b><u>Linked issues</u></b>
-
-
-
 
 <b><u>Testing</u></b>
 
