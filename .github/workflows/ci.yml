@@ -51,6 +51,8 @@ jobs:
   setup:
     uses: ./.github/workflows/setup.yml
     secrets: inherit
+    permissions:
+      pull-requests: write
 
   build_linux_packages:
     name: Build Linux Packages
