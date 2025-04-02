@@ -50,7 +50,7 @@ concurrency:
 jobs:
   add_default_targets_for_pr:
     name: "Add default targets for pull request"
-    if: ${{ github.event.action == 'opened' && github.event.issue.pull_request }} # run if this is a PR and PR was opened
+    if: ${{ github.event.action == 'opened' }} # run if this is a PR and PR was opened
     runs-on: ubuntu-24.04
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
