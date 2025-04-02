@@ -49,6 +49,7 @@ jobs:
     secrets: inherit
     permissions:
       pull-requests: write
+      contents: write
 
   build_linux_packages:
     name: Build Linux Packages
