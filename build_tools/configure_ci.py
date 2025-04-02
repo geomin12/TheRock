@@ -208,7 +208,7 @@ def get_pr_labels(args) -> List[str]:
     data = json.loads(args.get("pr_labels"))
     labels = []
     for label in data.get("labels", []):
-        labels.extend(label["name"])
+        labels.append(label["name"])
     return labels
 
 
