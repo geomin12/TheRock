@@ -50,6 +50,10 @@ concurrency:
 jobs:
   setup:
     uses: ./.github/workflows/setup.yml
+    permissions:
+      contents: write
+      pull-requests: write
+    secrets: inherit
 
   build_linux_packages:
     name: Build Linux Packages
