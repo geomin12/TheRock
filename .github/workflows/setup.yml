@@ -19,9 +19,6 @@ on:
         description: Windows families to run tests for.
         value: ${{ jobs.setup.outputs.test_windows_amdgpu_families }}
 
-permissions:
-  contents: read
-
 jobs:
   setup:
     runs-on: ubuntu-24.04
