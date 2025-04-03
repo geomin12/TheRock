@@ -24,7 +24,7 @@ jobs:
     needs: generate_release_matrix
     strategy:
       matrix:
-        assets: ${{ needs.generate_release_matrix.outputs.release_matrix }}
+        assets: ${{ fromJSON(needs.generate_release_matrix.outputs.release_matrix) }}
     env:
       FILE_NAME: ${{ matrix.assets.name }}
       VENV_DIR: ${{ github.workspace }}/.venv
