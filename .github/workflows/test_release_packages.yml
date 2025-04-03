@@ -6,7 +6,7 @@ on:
 
 jobs:
   generate_release_matrix:
-    runs-on: linux-mi300-1gpu-ossci-rocm
+    runs-on: ubuntu-latest
     outputs:
       release_matrix: ${{ steps.configure.outputs.release_matrix }}
     steps:
@@ -20,7 +20,7 @@ jobs:
         run: python ./build_tools/configure_release_matrix.py
 
   test_release_packages:
-    runs-on: linux-mi300-1gpu-ossci-rocm
+    runs-on: ubuntu-latest
     needs: generate_release_matrix
     strategy:
       matrix:
