@@ -1,0 +1,71 @@
+name: Test release packages
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  test_release_packages:
+    runs-on: ubuntu-latest
+    # for now, we will only run tests on gfx942 (mi300) since we only have the mi300 test available
+    if: contains(matrix.assets.name, 'gfx942')
+    strategy:
+      matrix:
+        assets: ${{ fromJSON(github.event.release.assets) }}
+    env:
+      FILE_NAME: ${{ matrix.assets.name }}
+      VENV_DIR: ${{ github.workspace }}/.venv
+      THEROCK_BIN_DIR: ${{ github.workspace }}/artifacts/${{ matrix.assets.name }}/bin
+      TAG_NAME: ${{ github.event.release.tag_name }}
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      # Downloading most triggered release tag assets to artifacts directory
+      - download_release_assets:
+        with:
+          name: 'Download release artifacts'
+          uses: robinraju/release-downloader@v1
+          tag: ${{ env.TAG_NAME }}
+          fileName: ${{ env.FILE_NAME }}
+          out-file-path: 'artifacts'
+
+      - extract_asset_files:
+        run: |
+          ls artifacts
+          tar -xf artifacts/${FILE_NAME}
+          ls artifacts
+
+      - name: "Setting up Python"
+        id: setup_python
+        uses: actions/setup-python@42375524e23c412d93fb67b49958b491fce71c38 # v5.4.0
+        with:
+          python-version: 3.11
+
+      - name: Create Python venv
+        run: |
+          python -m venv ${VENV_DIR}
+          source ${VENV_DIR}/bin/activate
+          pip install -r requirements-test.txt
+
+      - test_sanity_check:
+        run: |
+          source ${VENV_DIR}/bin/activate
+          pytest tests/ \
+          --log-cli-level=info
+      
+      - name: Run hipBLASLt tests
+        run: |
+          source ${VENV_DIR}/bin/activate
+          ${THEROCK_BIN_DIR}/hipblaslt-test --gtest_filter=*pre_checkin*
+
+      - name: Run rocBLAS tests
+        run: |
+          ROCBLAS_TENSILE_LIBPATH="${THEROCK_BIN_DIR}/lib/rocblas/library/"
+          source ${VENV_DIR}/bin/activate
+          ${THEROCK_BIN_DIR}/rocblas-test --yaml ${THEROCK_BIN_DIR}/rocblas_smoke.yaml
+        
+
+# start looking into support for more tests? mi300 should have support but not the others
+
+# add details to the release about tests
