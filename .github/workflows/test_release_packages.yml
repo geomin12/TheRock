@@ -5,11 +5,25 @@ on:
     types: [published]
 
 jobs:
+  generate_release_matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      release_matrix: ${{ steps.configure.outputs.release_matrix }}
+    steps:
+      - name: "Checking out repository"
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: "Generating release matrix"
+        id: configure
+        env:
+          ASSET_FILES: ${{ toJSON(github.event.release.assets) }}
+        run: ./build_tools/configure_release_matrix.py
+
   test_release_packages:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        assets: ${{ fromJSON(github.event.release.assets) }}
+        assets: ${{ needs.generate_release_matrix.outputs.release_matrix }}
     env:
       FILE_NAME: ${{ matrix.assets.name }}
       VENV_DIR: ${{ github.workspace }}/.venv
@@ -22,14 +36,13 @@ jobs:
       # Downloading most triggered release tag assets to artifacts directory
       - name: 'Download release artifacts'
         # for now, we will only run tests on gfx942 (mi300) since we only have the mi300 test available
-        if: contains(env.FILE_NAME, 'gfx942')
         uses: robinraju/release-downloader@v1
         with:
           tag: ${{ env.TAG_NAME }}
           fileName: ${{ env.FILE_NAME }}
           out-file-path: 'artifacts'
 
-      - name: extract_asset_files
+      - name: Extract tar asset file
         run: |
           ls artifacts
           tar -xf artifacts/${FILE_NAME}
@@ -64,7 +77,5 @@ jobs:
           source ${VENV_DIR}/bin/activate
           ${THEROCK_BIN_DIR}/rocblas-test --yaml ${THEROCK_BIN_DIR}/rocblas_smoke.yaml
         
-
-# start looking into support for more tests? mi300 should have support but not the others
 
 # add details to the release about tests
