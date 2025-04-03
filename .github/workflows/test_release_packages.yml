@@ -86,10 +86,11 @@ jobs:
       - name: Append results to markdown file
         if: '!cancelled()'
         run: |
+          echo "" >> ${{ github.workspace }}/test_notes.md
           echo "Test results for ${{ env.FILE_NAME }}" >> ${{ github.workspace }}/test_notes.md
-          echo "SANITY_CHECK_PASS=${{ steps.sanity-check.outcome }}" >> ${{ github.workspace }}/test_notes.md
-          echo "HIPBLASLT_CHECK_PASS=${{ steps.hipblaslt-tests.outcome }}" >> ${{ github.workspace }}/test_notes.md
-          echo "ROCBLAS_CHECK_PASS=${{ steps.rocblas-tests.outcome }}" >> ${{ github.workspace }}/test_notes.md
+          echo "* SANITY_CHECK_PASS=${{ steps.sanity-check.outcome }}" >> ${{ github.workspace }}/test_notes.md
+          echo "* HIPBLASLT_CHECK_PASS=${{ steps.hipblaslt-tests.outcome }}" >> ${{ github.workspace }}/test_notes.md
+          echo "* ROCBLAS_CHECK_PASS=${{ steps.rocblas-tests.outcome }}" >> ${{ github.workspace }}/test_notes.md
 
       - name: Report test notes to the release body
         if: '!cancelled()'
