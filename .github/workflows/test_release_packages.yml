@@ -4,9 +4,6 @@ on:
   release:
     types: [published]
 
-permissions:
-  contents: read
-
 jobs:
   generate_release_matrix:
     runs-on: ubuntu-latest
@@ -20,7 +17,7 @@ jobs:
         id: configure
         env:
           ASSET_FILES: ${{ toJSON(github.event.release.assets) }}
-        run: ./build_tools/configure_release_matrix.py
+        run: python ./build_tools/configure_release_matrix.py
 
   test_release_packages:
     runs-on: ubuntu-latest

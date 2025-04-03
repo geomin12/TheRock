@@ -1,5 +1,6 @@
 import os
 import json
+from typing import Mapping
 
 def set_github_output(d: Mapping[str, str]):
     """Sets GITHUB_OUTPUT values.
