@@ -28,7 +28,7 @@ jobs:
     env:
       FILE_NAME: ${{ matrix.file_name }}
       VENV_DIR: ${{ github.workspace }}/.venv
-      THEROCK_BIN_DIR: ${{ github.workspace }}/artifacts/${{ matrix.file_name }}/bin
+      THEROCK_BIN_DIR: ${{ github.workspace }}/artifacts/output_dir/bin
       TAG_NAME: ${{ github.event.release.tag_name }}
     steps:
       - name: Checkout Repository
@@ -46,7 +46,7 @@ jobs:
       - name: Extract tar asset file
         run: |
           ls artifacts
-          tar -xf artifacts/${FILE_NAME}
+          tar -xf artifacts/${FILE_NAME} -C ${{ github.workspace }}/artifacts/output_dir
           ls artifacts
 
       - name: "Setting up Python"
