@@ -89,11 +89,15 @@ jobs:
       - name: Adding test notes to the release
         if: '!cancelled()'
         uses: softprops/action-gh-release@v2
+        env:
+          SANITY_CHECK_PASS: ${{ steps.sanity-check.outputs.SANITY_CHECK_PASS }}
+          HIPBLASLT_CHECK_PASS: ${{ steps.hipblaslt.outputs.HIPBLASLT_CHECK_PASS }}
+          ROCBLAS_CHECK_PASS: ${{ steps.rocblas.outputs.ROCBLAS_CHECK_PASS }}
         with:
           tag_name: ${{ env.TAG_NAME }}
           append_body: true
           body: |
             Test status:
-            * Sanity checks: ${{ steps.sanity-check.outputs.SANITY_CHECK_PASS }}
-            * hipBLASLt: ${{ steps.hipblaslt.outputs.HIPBLASLT_CHECK_PASS }}
-            * rocBLAS: ${{ steps.rocblas.outputs.ROCBLAS_CHECK_PASS }}
+            * Sanity checks: ${{ env.SANITY_CHECK_PASS }}
+            * hipBLASLt: ${{ env.HIPBLASLT_CHECK_PASS }}
+            * rocBLAS: ${{ env.ROCBLAS_CHECK_PASS }}
