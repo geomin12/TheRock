@@ -62,28 +62,34 @@ jobs:
 
       - name: Run Sanity check
         if: '!cancelled()'
+        id: sanity-check
         run: |
           source ${VENV_DIR}/bin/activate
           pytest tests/ \
           --log-cli-level=info
-          echo "SANITY_CHECK_PASS=$(if [ $? -eq 0 ]; then echo PASS; else echo FAIL; fi)" >> ${{ github.workspace }}/test_notes.md
 
       - name: Run hipBLASLt tests
         if: '!cancelled()'
+        id: hipblaslt-tests
         run: |
           source ${VENV_DIR}/bin/activate
           ${THEROCK_BIN_DIR}/hipblaslt-test --gtest_filter=*pre_checkin*
-          echo "HIPBLASLT_CHECK_PASS=$(if [ $? -eq 0 ]; then echo PASS; else echo FAIL; fi)" >> ${{ github.workspace }}/test_notes.md
 
       - name: Run rocBLAS tests
         if: '!cancelled()'
+        id: rocblas-tests
         run: |
           ROCBLAS_TENSILE_LIBPATH="${THEROCK_BIN_DIR}/lib/rocblas/library/"
           source ${VENV_DIR}/bin/activate
           ${THEROCK_BIN_DIR}/rocblas-test --yaml ${THEROCK_BIN_DIR}/rocblas_smoke.yaml
-          echo "ROCBLAS_CHECK_PASS=$(if [ $? -eq 0 ]; then echo PASS; else echo FAIL; fi)" >> ${{ github.workspace }}/test_notes.md
 
-      - name: Adding test notes to the release
+      - name: Append results to markdown file
+        run: |
+          echo "SANITY_CHECK_PASS=${{ steps.sanity-check.outcome }}" >> ${{ github.workspace }}/test_notes.md
+          echo "HIPBLASLT_CHECK_PASS=${{ steps.hipblaslt-tests.outcome }}" >> ${{ github.workspace }}/test_notes.md
+          echo "ROCBLAS_CHECK_PASS=${{ steps.rocblas-tests.outcome }}" >> ${{ github.workspace }}/test_notes.md
+
+      - name: Report test notes to the release body
         if: '!cancelled()'
         uses: softprops/action-gh-release@v2
         with:
