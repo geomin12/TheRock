@@ -22,7 +22,7 @@ jobs:
       # Downloading most triggered release tag assets to artifacts directory
       - name: 'Download release artifacts'
         # for now, we will only run tests on gfx942 (mi300) since we only have the mi300 test available
-        if: contains(env.FILE_NAME, "gfx942")
+        if: contains(env.FILE_NAME, 'gfx942')
         uses: robinraju/release-downloader@v1
         with:
           tag: ${{ env.TAG_NAME }}
