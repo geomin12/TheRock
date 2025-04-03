@@ -21,7 +21,7 @@ def main(args):
         asset_name = asset.get("name", "")
         # for now, we can only run tests on mi300 (gfx94X), so hard-coded value here
         if "gfx94X" in asset_name:
-            release_matrix.append({"name": asset_name})
+            release_matrix.append(asset_name)
             
     set_github_output({
         "release_matrix": json.dumps(release_matrix)

@@ -24,11 +24,11 @@ jobs:
     needs: generate_release_matrix
     strategy:
       matrix:
-        assets: ${{ fromJSON(needs.generate_release_matrix.outputs.release_matrix) }}
+        file_name: ${{ fromJSON(needs.generate_release_matrix.outputs.release_matrix) }}
     env:
-      FILE_NAME: ${{ matrix.assets.name }}
+      FILE_NAME: ${{ matrix.file_name }}
       VENV_DIR: ${{ github.workspace }}/.venv
-      THEROCK_BIN_DIR: ${{ github.workspace }}/artifacts/${{ matrix.assets.name }}/bin
+      THEROCK_BIN_DIR: ${{ github.workspace }}/artifacts/${{ matrix.file_name }}/bin
       TAG_NAME: ${{ github.event.release.tag_name }}
     steps:
       - name: Checkout Repository
