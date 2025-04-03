@@ -1,6 +1,5 @@
 import os
 import json
-from typing import Mapping
 from configure_ci import set_github_output
 
 # This file helps generate a release test matrix for test_release_packages.yml
