@@ -66,14 +66,14 @@ jobs:
           source ${VENV_DIR}/bin/activate
           pytest tests/ \
           --log-cli-level=info
-          echo "SANITY_CHECK_PASS=$(if [ $? -eq 0 ]; then echo PASS; else echo FAIL; fi)" >> $GITHUB_ENV
+          echo "SANITY_CHECK_PASS=$(if [ $? -eq 0 ]; then echo PASS; else echo FAIL; fi)" >> "$GITHUB_ENV"
 
       - name: Run hipBLASLt tests
         if: '!cancelled()'
         run: |
           source ${VENV_DIR}/bin/activate
           ${THEROCK_BIN_DIR}/hipblaslt-test --gtest_filter=*pre_checkin*
-          echo "HIPBLASLT_CHECK_PASS=$(if [ $? -eq 0 ]; then echo PASS; else echo FAIL; fi)" >> $GITHUB_ENV
+          echo "HIPBLASLT_CHECK_PASS=$(if [ $? -eq 0 ]; then echo PASS; else echo FAIL; fi)" >> "$GITHUB_ENV"
 
       - name: Run rocBLAS tests
         if: '!cancelled()'
@@ -81,7 +81,7 @@ jobs:
           ROCBLAS_TENSILE_LIBPATH="${THEROCK_BIN_DIR}/lib/rocblas/library/"
           source ${VENV_DIR}/bin/activate
           ${THEROCK_BIN_DIR}/rocblas-test --yaml ${THEROCK_BIN_DIR}/rocblas_smoke.yaml
-          echo "ROCBLAS_CHECK_PASS=$(if [ $? -eq 0 ]; then echo PASS; else echo FAIL; fi)" >> $GITHUB_ENV
+          echo "ROCBLAS_CHECK_PASS=$(if [ $? -eq 0 ]; then echo PASS; else echo FAIL; fi)" >> "$GITHUB_ENV"
 
       - name: Adding test notes to the release
         if: '!cancelled()'
