@@ -19,8 +19,9 @@ jobs:
           ASSET_FILES: ${{ toJSON(github.event.release.assets) }}
         run: python ./build_tools/configure_release_matrix.py
 
+
   test_release_packages:
-    runs-on: ubuntu-latest
+    runs-on: linux-mi300-1gpu-ossci-rocm
     needs: generate_release_matrix
     strategy:
       matrix:
@@ -35,7 +36,7 @@ jobs:
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
       # Downloading release tag assets to artifacts directory
-      # For now, we will only run tests on gfx942 since we only have one machine for gfx942
+      # For now, we will only run tests on gfx942 since we only have one test machine for gfx942
       - name: Download release artifacts
         uses: robinraju/release-downloader@v1
         with:
@@ -83,6 +84,7 @@ jobs:
           source ${VENV_DIR}/bin/activate
           ${THEROCK_BIN_DIR}/rocblas-test --yaml ${THEROCK_BIN_DIR}/rocblas_smoke.yaml
 
+      # Creating a markdown file for testing notes since environment variables cannot be resolved in markdown
       - name: Append results to markdown file
         if: '!cancelled()'
         run: |
