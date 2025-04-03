@@ -91,6 +91,6 @@ jobs:
           append_body: true
           body: |
             Test status:
-            * Sanity checks: ${SANITY_CHECK_PASS}
-            * hipBLASLt: ${HIPBLASLT_CHECK_PASS}
-            * rocBLAS: ${ROCBLAS_CHECK_PASS}
+            * Sanity checks: ${{ env.SANITY_CHECK_PASS }}
+            * hipBLASLt: ${{ env.HIPBLASLT_CHECK_PASS }}
+            * rocBLAS: ${{ env.ROCBLAS_CHECK_PASS }}
