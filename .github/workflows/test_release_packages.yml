@@ -62,26 +62,29 @@ jobs:
 
       - name: Run Sanity check
         if: '!cancelled()'
+        id: "sanity-check"
         run: |
           source ${VENV_DIR}/bin/activate
           pytest tests/ \
           --log-cli-level=info
-          echo "SANITY_CHECK_PASS=$(if [ $? -eq 0 ]; then echo PASS; else echo FAIL; fi)" >> "$GITHUB_ENV"
+          echo "SANITY_CHECK_PASS=$(if [ $? -eq 0 ]; then echo PASS; else echo FAIL; fi)" >> "$GITHUB_OUTPUT"
 
       - name: Run hipBLASLt tests
         if: '!cancelled()'
+        id: "hipblaslt"
         run: |
           source ${VENV_DIR}/bin/activate
           ${THEROCK_BIN_DIR}/hipblaslt-test --gtest_filter=*pre_checkin*
-          echo "HIPBLASLT_CHECK_PASS=$(if [ $? -eq 0 ]; then echo PASS; else echo FAIL; fi)" >> "$GITHUB_ENV"
+          echo "HIPBLASLT_CHECK_PASS=$(if [ $? -eq 0 ]; then echo PASS; else echo FAIL; fi)" >> "$GITHUB_OUTPUT"
 
       - name: Run rocBLAS tests
         if: '!cancelled()'
+        id: "rocblas"
         run: |
           ROCBLAS_TENSILE_LIBPATH="${THEROCK_BIN_DIR}/lib/rocblas/library/"
           source ${VENV_DIR}/bin/activate
           ${THEROCK_BIN_DIR}/rocblas-test --yaml ${THEROCK_BIN_DIR}/rocblas_smoke.yaml
-          echo "ROCBLAS_CHECK_PASS=$(if [ $? -eq 0 ]; then echo PASS; else echo FAIL; fi)" >> "$GITHUB_ENV"
+          echo "ROCBLAS_CHECK_PASS=$(if [ $? -eq 0 ]; then echo PASS; else echo FAIL; fi)" >> "$GITHUB_OUTPUT"
 
       - name: Adding test notes to the release
         if: '!cancelled()'
@@ -91,6 +94,6 @@ jobs:
           append_body: true
           body: |
             Test status:
-            * Sanity checks: ${{ env.SANITY_CHECK_PASS }}
-            * hipBLASLt: ${{ env.HIPBLASLT_CHECK_PASS }}
-            * rocBLAS: ${{ env.ROCBLAS_CHECK_PASS }}
+            * Sanity checks: ${{ steps.sanity-check.outputs.SANITY_CHECK_PASS }}
+            * hipBLASLt: ${{ steps.hipblaslt.outputs.HIPBLASLT_CHECK_PASS }}
+            * rocBLAS: ${{ steps.rocblas.outputs.ROCBLAS_CHECK_PASS }}
