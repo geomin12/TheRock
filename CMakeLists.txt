@@ -68,10 +68,19 @@ if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
   message(STATUS "Defaulted CMAKE_INSTALL_PREFIX to ${CMAKE_INSTALL_PREFIX}")
 endif()
 
-
-set(ROCM_MAJOR_VERSION 6)
-set(ROCM_MINOR_VERSION 4)
-set(ROCM_PATCH_VERSION 0)
+block(PROPAGATE ROCM_MAJOR_VERSION ROCM_MINOR_VERSION ROCM_PATCH_VERSION)
+  file(READ ${CMAKE_CURRENT_SOURCE_DIR}/version.json VERSION_JSON_STRING)
+  string(JSON VERSION_STRING GET ${VERSION_JSON_STRING} rocm-version)
+  string(REGEX MATCH "^([0-9]+)\\.([0-9]+)\\.([0-9]+)" ROCM_VERSION ${VERSION_STRING})
+  if(ROCM_VERSION)
+    set(ROCM_MAJOR_VERSION ${CMAKE_MATCH_1})
+    set(ROCM_MINOR_VERSION ${CMAKE_MATCH_2})
+    set(ROCM_PATCH_VERSION ${CMAKE_MATCH_3})
+    message(STATUS "ROCm version: ${ROCM_MAJOR_VERSION}.${ROCM_MINOR_VERSION}.${ROCM_PATCH_VERSION}")
+  else()
+    message(FATAL_ERROR "Failed to determine ROCm version.")
+  endif()
+endblock()
 
 ################################################################################
 # Debug Options
@@ -117,14 +126,26 @@ therock_add_feature(HIPIFY
 )
 
 # Core Features.
-therock_add_feature(CORE_RUNTIME
-  GROUP CORE
-  DESCRIPTION "Enables the core device runtime and tools"
-)
+# The HIP runtime for ROCm uses different implementations per platform today:
+#   * HIP on Linux uses the HSA runtime in ROCR-Runtime, used by CLR.
+#   * HIP on Windows uses the PAL runtime included directly as part of CLR.
+# https://rocm.docs.amd.com/projects/install-on-windows/en/latest/reference/component-support.html
+if(NOT WIN32)
+  # Other platforms (Linux) _do_ have the "core runtime".
+  therock_add_feature(CORE_RUNTIME
+    GROUP CORE
+    DESCRIPTION "Enables the core device runtime and tools"
+  )
+  set(_hip_runtime_platform_requirements "CORE_RUNTIME")
+else()
+  # No "core runtime" (ROCR-Runtime + rocminfo) on Windows.
+  # TODO(#36): Could provide an alternate or no-op "core runtime" instead?
+  set(_hip_runtime_platform_requirements "")
+endif()
 therock_add_feature(HIP_RUNTIME
   GROUP CORE
   DESCRIPTION "Enables the HIP runtime"
-  REQUIRES COMPILER CORE_RUNTIME
+  REQUIRES COMPILER ${_hip_runtime_platform_requirements}
 )
 
 # Profiler Features.

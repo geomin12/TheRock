@@ -60,6 +60,21 @@ set(THEROCK_AMD_LLVM_DEFAULT_CXX_FLAGS
   -Wno-unused-command-line-argument
 )
 
+if(WIN32)
+  # TODO(#36): Could we fix these warnings as part of enabling shared library builds?
+  # These are frequently set in subproject toolchain-windows.cmake files.
+  # Warning example:
+  #     __declspec attribute 'dllexport' is not supported
+  list(APPEND THEROCK_AMD_LLVM_DEFAULT_CXX_FLAGS -Wno-ignored-attributes)
+  # Warning example:
+  #     unknown attribute '__dllimport__' ignored
+  list(APPEND THEROCK_AMD_LLVM_DEFAULT_CXX_FLAGS -Wno-unknown-attributes)
+
+  # Warning example:
+  #     duplicate 'static' declaration specifier
+  list(APPEND THEROCK_AMD_LLVM_DEFAULT_CXX_FLAGS -Wno-duplicate-decl-specifier)
+endif()
+
 # Generates a command prefix that can be prepended to any custom command line
 # to perform log/console redirection and pretty printing.
 # LOG_FILE: If given, command output will also be sent to this log file. If
@@ -543,13 +558,6 @@ function(therock_cmake_subproject_activate target_name)
   string(APPEND _init_contents "${_deps_contents}")
   string(APPEND _init_contents "set(THEROCK_IGNORE_PACKAGES \"@_ignore_packages@\")\n")
   string(APPEND _init_contents "list(PREPEND CMAKE_MODULE_PATH \"${THEROCK_SOURCE_DIR}/cmake/finders\")\n")
-  if(WIN32)
-    # Windows currently relies on some prebuilt toolchain components from the
-    # HIP SDK. As part of https://github.com/ROCm/TheRock/issues/36 we should
-    # be able to satisfy find_package(HIP) via the toolchain.
-    file(TO_CMAKE_PATH "$ENV{HIP_PATH}" HIP_DIR)
-    string(APPEND _init_contents "string(APPEND CMAKE_PREFIX_PATH \"${HIP_DIR}\")\n")
-  endif()
   foreach(_private_link_dir ${_private_link_dirs})
     if(THEROCK_VERBOSE)
       message(STATUS "  LINK_DIR: ${_private_link_dir}")
@@ -558,6 +566,11 @@ function(therock_cmake_subproject_activate target_name)
       # The normal way.
       string(APPEND _init_contents "string(APPEND CMAKE_EXE_LINKER_FLAGS \" -L ${_private_link_dir} -Wl,-rpath-link,${_private_link_dir}\")\n")
       string(APPEND _init_contents "string(APPEND CMAKE_SHARED_LINKER_FLAGS \" -L ${_private_link_dir} -Wl,-rpath-link,${_private_link_dir}\")\n")
+    elseif(_compiler_toolchain STREQUAL "amd-llvm" OR _compiler_toolchain STREQUAL "amd-hip")
+      # The Windows but using a clang-based toolchain way.
+      #   Working around "lld-link: warning: ignoring unknown argument '-rpath-link'"
+      string(APPEND _init_contents "string(APPEND CMAKE_EXE_LINKER_FLAGS \" -L ${_private_link_dir} \")\n")
+      string(APPEND _init_contents "string(APPEND CMAKE_SHARED_LINKER_FLAGS \" -L ${_private_link_dir} \")\n")
     else()
       # The MSVC way.
       string(APPEND _init_contents "string(APPEND CMAKE_EXE_LINKER_FLAGS \" /LIBPATH:${_private_link_dir}\")\n")
@@ -1050,14 +1063,17 @@ function(_therock_cmake_subproject_setup_toolchain
   string(APPEND _toolchain_contents "set(CMAKE_C_COMPILER_LAUNCHER \"@CMAKE_C_COMPILER_LAUNCHER@\")\n")
   string(APPEND _toolchain_contents "set(CMAKE_CXX_COMPILER_LAUNCHER \"@CMAKE_CXX_COMPILER_LAUNCHER@\")\n")
   string(APPEND _toolchain_contents "set(CMAKE_MSVC_DEBUG_INFORMATION_FORMAT \"@CMAKE_MSVC_DEBUG_INFORMATION_FORMAT@\")\n")
-  if(MSVC)
+  if(MSVC AND compiler_toolchain)
     # The system compiler and the toolchain compiler are incompatible, so we
-    # define flags from scratch for the toolchain compiler. Each ROCm project
-    # typically has its own `toolchain-windows.cmake` file that we are bypassing
-    # here. If any flags are load bearing we can either add them to all projects
-    # or source those flags from the projects themselves more locally.
+    # define flags from scratch for the toolchain compiler.
+    #
+    # Each ROCm project typically has its own `toolchain-windows.cmake` file
+    # that we are bypassing here. Some projects additionally set platform or
+    # configuration-specific options in `rmake.py`. If any flags are load
+    # bearing we can either add them to all projects or source those flags from
+    # the projects themselves more locally.
     string(APPEND _toolchain_contents "set(CMAKE_C_FLAGS_INIT )\n")
-    string(APPEND _toolchain_contents "set(CMAKE_CXX_FLAGS_INIT \"-DWIN32 -D_CRT_SECURE_NO_WARNINGS\")\n")
+    string(APPEND _toolchain_contents "set(CMAKE_CXX_FLAGS_INIT \"-DWIN32 -D_CRT_SECURE_NO_WARNINGS -DNOMINMAX -fms-extensions -fms-compatibility -D_ENABLE_EXTENDED_ALIGNED_STORAGE \")\n")
     string(APPEND _toolchain_contents "set(CMAKE_EXE_LINKER_FLAGS_INIT )\n")
     string(APPEND _toolchain_contents "set(CMAKE_SHARED_LINKER_FLAGS_INIT )\n")
   else()
@@ -1081,13 +1097,6 @@ function(_therock_cmake_subproject_setup_toolchain
     # The main difference is that for "amd-llvm", we derive the configuration from
     # the amd-llvm project's dist/ tree. And for "amd-hip", from the hip-clr
     # project (which has runtime dependencies on the underlying toolchain).
-    if(WIN32 AND compiler_toolchain STREQUAL "amd-hip")
-      # On Windows, we only have the amd-llvm toolchain today, so override.
-      set(compiler_toolchain "amd-llvm")
-      if(THEROCK_VERBOSE)
-        message(STATUS "Windows: overriding compiler_toolchain from amd-hip to amd-llvm")
-      endif()
-    endif()
     if(compiler_toolchain STREQUAL "amd-hip")
       set(_toolchain_subproject "hip-clr")
     else()

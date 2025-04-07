@@ -18,45 +18,45 @@ This table tracks current support status for each subproject in TheRock on
 Windows. Some subprojects may need extra patches to build within TheRock (on
 mainline, in open source, using MSVC, etc.).
 
-| Component subset | Subproject                                                                   | Supported | Notes                                            |
-| ---------------- | ---------------------------------------------------------------------------- | --------- | ------------------------------------------------ |
-| base             | aux-overlay                                                                  | ✅        |                                                  |
-| base             | [rocm-cmake](https://github.com/ROCm/rocm-cmake)                             | ✅        |                                                  |
-| base             | [rocm-core](https://github.com/ROCm/rocm-core)                               | ✅        | No shared libraries                              |
-| base             | [rocm_smi_lib](https://github.com/ROCm/rocm_smi_lib)                         | ❌        | Unsupported                                      |
-| base             | [rocprofiler-register](https://github.com/ROCm/rocprofiler-register)         | ❌        | Unsupported                                      |
-| base             | [rocm-half](https://github.com/ROCm/half)                                    | ✅        |                                                  |
-|                  |                                                                              |           |                                                  |
-| compiler         | [amd-llvm](https://github.com/ROCm/llvm-project)                             | ✅        | No shared libraries, limited runtimes            |
-| compiler         | [amd-comgr](https://github.com/ROCm/llvm-project/tree/amd-staging/amd/comgr) | ✅        | No shared libraries                              |
-| compiler         | [hipcc](https://github.com/ROCm/llvm-project/tree/amd-staging/amd/hipcc)     | ✅        |                                                  |
-| compiler         | [hipify](https://github.com/ROCm/HIPIFY)                                     | ✅        | Patched for Ninja                                |
-|                  |                                                                              |           |                                                  |
-| core             | [ROCR-Runtime](https://github.com/ROCm/ROCR-Runtime)                         | ❌        | Unsupported                                      |
-| core             | [rocminfo](https://github.com/ROCm/rocminfo)                                 | ❌        | Unsupported                                      |
-| core             | [clr](https://github.com/ROCm/clr)                                           | ❔        | Under review (partly closed source)              |
-|                  |                                                                              |           |                                                  |
-| profiler         | [rocprofiler-sdk](https://github.com/ROCm/rocprofiler-sdk)                   | ❔        |                                                  |
-|                  |                                                                              |           |                                                  |
-| comm-libs        | [rccl](https://github.com/ROCm/rccl)                                         | ❔        |                                                  |
-|                  |                                                                              |           |                                                  |
-| math-libs        | [rocRAND](https://github.com/ROCm/rocRAND)                                   | ❔        | Almost ready. Needs workaround for `hip-clr` dep |
-| math-libs        | [hipRAND](https://github.com/ROCm/hipRAND)                                   | ❔        | Almost ready. Needs workaround for `hip-clr` dep |
-| math-libs        | [rocPRIM](https://github.com/ROCm/rocPRIM)                                   | ❔        |                                                  |
-| math-libs        | [hipCUB](https://github.com/ROCm/hipCUB)                                     | ❔        |                                                  |
-| math-libs        | [rocThrust](https://github.com/ROCm/rocThrust)                               | ❔        |                                                  |
-| math-libs        | [rocFFT](https://github.com/ROCm/rocFFT)                                     | ❔        |                                                  |
-| math-libs        | [hipFFT](https://github.com/ROCm/hipFFT)                                     | ❔        |                                                  |
-| math-libs (blas) | [hipBLAS-common](https://github.com/ROCm/hipBLAS-common)                     | ❔        |                                                  |
-| math-libs (blas) | [hipBLASlt](https://github.com/ROCm/hipBLASlt)                               | ❔        |                                                  |
-| math-libs (blas) | [rocBLAS](https://github.com/ROCm/rocBLAS)                                   | ❔        |                                                  |
-| math-libs (blas) | [rocSPARSE](https://github.com/ROCm/rocSPARSE)                               | ❔        |                                                  |
-| math-libs (blas) | [hipSPARSE](https://github.com/ROCm/hipSPARSE)                               | ❔        |                                                  |
-| math-libs (blas) | [rocSOLVER](https://github.com/ROCm/rocSOLVER)                               | ❔        |                                                  |
-| math-libs (blas) | [hipSOLVER](https://github.com/ROCm/hipSOLVER)                               | ❔        |                                                  |
-| math-libs (blas) | [hipBLAS](https://github.com/ROCm/hipBLAS)                                   | ❔        |                                                  |
-|                  |                                                                              |           |                                                  |
-| ml-libs          | [MIOpen](https://github.com/ROCm/MIOpen)                                     | ❔        |                                                  |
+| Component subset | Subproject                                                                   | Supported | Notes                                         |
+| ---------------- | ---------------------------------------------------------------------------- | --------- | --------------------------------------------- |
+| base             | aux-overlay                                                                  | ✅        |                                               |
+| base             | [rocm-cmake](https://github.com/ROCm/rocm-cmake)                             | ✅        |                                               |
+| base             | [rocm-core](https://github.com/ROCm/rocm-core)                               | ✅        | No shared libraries                           |
+| base             | [rocm_smi_lib](https://github.com/ROCm/rocm_smi_lib)                         | ❌        | Unsupported                                   |
+| base             | [rocprofiler-register](https://github.com/ROCm/rocprofiler-register)         | ❌        | Unsupported                                   |
+| base             | [rocm-half](https://github.com/ROCm/half)                                    | ✅        |                                               |
+|                  |                                                                              |           |                                               |
+| compiler         | [amd-llvm](https://github.com/ROCm/llvm-project)                             | ✅        | No shared libraries, limited runtimes         |
+| compiler         | [amd-comgr](https://github.com/ROCm/llvm-project/tree/amd-staging/amd/comgr) | ✅        | No shared libraries                           |
+| compiler         | [hipcc](https://github.com/ROCm/llvm-project/tree/amd-staging/amd/hipcc)     | ✅        |                                               |
+| compiler         | [hipify](https://github.com/ROCm/HIPIFY)                                     | ✅        | Patched for Ninja                             |
+|                  |                                                                              |           |                                               |
+| core             | [ROCR-Runtime](https://github.com/ROCm/ROCR-Runtime)                         | ❌        | Unsupported                                   |
+| core             | [rocminfo](https://github.com/ROCm/rocminfo)                                 | ❌        | Unsupported                                   |
+| core             | [clr](https://github.com/ROCm/clr)                                           | ⭕        | Needs a folder with prebuilt static libraries |
+|                  |                                                                              |           |                                               |
+| profiler         | [rocprofiler-sdk](https://github.com/ROCm/rocprofiler-sdk)                   | ❔        |                                               |
+|                  |                                                                              |           |                                               |
+| comm-libs        | [rccl](https://github.com/ROCm/rccl)                                         | ❔        |                                               |
+|                  |                                                                              |           |                                               |
+| math-libs        | [rocRAND](https://github.com/ROCm/rocRAND)                                   | ✅        |                                               |
+| math-libs        | [hipRAND](https://github.com/ROCm/hipRAND)                                   | ✅        |                                               |
+| math-libs        | [rocPRIM](https://github.com/ROCm/rocPRIM)                                   | ✅        |                                               |
+| math-libs        | [hipCUB](https://github.com/ROCm/hipCUB)                                     | ✅        |                                               |
+| math-libs        | [rocThrust](https://github.com/ROCm/rocThrust)                               | ✅        |                                               |
+| math-libs        | [rocFFT](https://github.com/ROCm/rocFFT)                                     | ✅        | No shared libraries                           |
+| math-libs        | [hipFFT](https://github.com/ROCm/hipFFT)                                     | ✅        | No shared libraries                           |
+| math-libs (blas) | [hipBLAS-common](https://github.com/ROCm/hipBLAS-common)                     | ❔        |                                               |
+| math-libs (blas) | [hipBLASlt](https://github.com/ROCm/hipBLASlt)                               | ❔        |                                               |
+| math-libs (blas) | [rocBLAS](https://github.com/ROCm/rocBLAS)                                   | ❔        |                                               |
+| math-libs (blas) | [rocSPARSE](https://github.com/ROCm/rocSPARSE)                               | ❔        |                                               |
+| math-libs (blas) | [hipSPARSE](https://github.com/ROCm/hipSPARSE)                               | ❔        |                                               |
+| math-libs (blas) | [rocSOLVER](https://github.com/ROCm/rocSOLVER)                               | ❔        |                                               |
+| math-libs (blas) | [hipSOLVER](https://github.com/ROCm/hipSOLVER)                               | ❔        |                                               |
+| math-libs (blas) | [hipBLAS](https://github.com/ROCm/hipBLAS)                                   | ❔        |                                               |
+|                  |                                                                              |           |                                               |
+| ml-libs          | [MIOpen](https://github.com/ROCm/MIOpen)                                     | ❔        |                                               |
 
 ## Building from source
 
@@ -206,3 +206,54 @@ cmake --build build
 
 At the moment this should build some projects in [`base/`](../../base/) as well
 as [`compiler/`](../../compiler/).
+
+### Building CLR from partial sources
+
+We are actively working on enabling source builds of
+https://github.com/ROCm/clr (notably for `amdhip64_6.dll`) on Windows.
+Historically this has been a closed source component due to the dependency on
+[Platform Abstraction Library (PAL)](https://github.com/GPUOpen-Drivers/pal)
+and providing a fully open source build will take more time. As an incremental
+step towards a fully open source build, we will use a `compute-win` folder
+containing header files and static library `.lib` files for PAL and related
+components.
+
+An incremental rollout is planned:
+
+1. *(We are here today)* The `compute-win` folder must be manually copied into
+   place at `core/compute-win`. This will allow AMD developers to iterate on
+   integration into TheRock while we work on making this folder or more source
+   files available.
+1. The `compute-win` folder will be available publicly and will be included
+   automatically from either a git repository or cloud storage (like the
+   existing third party dep mirrors in [`third-party/`](../../third-party/)).
+1. A more permanent open source strategy for building the CLR (the HIP runtime)
+   from source on Windows will eventually be available.
+
+With the `compute-win` folder available, build by configuring CMake with these
+options set:
+
+```bash
+-DTHEROCK_ENABLE_CORE=ON \
+-DTHEROCK_ENABLE_HIP_RUNTIME=ON \
+```
+
+then look for `build/core/clr/dist/bin/amdhip64_6.dll` and related outputs.
+
+With the HIP runtime building, these flags can also now be enabled:
+
+```bash
+-DTHEROCK_ENABLE_RAND=ON \
+-DTHEROCK_ENABLE_PRIM=ON \
+-DTHEROCK_ENABLE_FFT=ON \
+```
+
+### Testing
+
+Test builds can be enabled with `-DBUILD_TESTING=ON`.
+
+Some subproject tests have been validated on Windows, like rocPRIM:
+
+```bash
+ctest --test-dir build/math-libs/rocPRIM/dist/bin/rocprim --output-on-failure
+```
