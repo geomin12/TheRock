@@ -91,7 +91,7 @@ jobs:
     if: |
       ${{
         !cancelled() &&
-        fromJSON(needs.setup.outputs.test_linux_amdgpu_families) != '[]' &&
+        fromJSON(needs.setup.outputs.test_linux_amdgpu_families) != [] &&
         (
           needs.build_linux_packages.result == 'success' ||
           needs.build_linux_packages.result == 'skipped'
