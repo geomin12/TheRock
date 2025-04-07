@@ -1,9 +1,11 @@
 name: Test release packages
 
 on:
+  push:
+    branches:
+      - release-test
   workflow_run:
-    workflows: ["okok yay"]
-    # workflows: ["Build portable Linux packages"]
+    workflows: ["Build portable Linux packages"]
     types:
       - completed
 
@@ -13,7 +15,7 @@ permissions:
 jobs:
   generate_release_matrix:
     runs-on: ubuntu-24.04
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    # if: ${{ github.event.workflow_run.conclusion == 'success' }}
     outputs:
       release_matrix: ${{ steps.configure.outputs.release_matrix }}
       today_date: ${{ steps.configure.outputs.today_date }}
