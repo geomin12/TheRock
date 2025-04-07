@@ -82,8 +82,8 @@ jobs:
     steps:
       - name: echo
         run: |
-          echo fromJSON(needs.setup.outputs.test_linux_amdgpu_families)
-          echo needs.setup.outputs.test_linux_amdgpu_families
+          echo ${{ fromJSON(needs.setup.outputs.test_linux_amdgpu_families) }}
+          echo ${{ needs.setup.outputs.test_linux_amdgpu_families }}
 
   test_linux_packages:
     needs: [setup, build_linux_packages]
