@@ -1,44 +1,60 @@
 name: Test release packages
 
 on:
-  release:
-    types: [published]
+  workflow_run:
+    workflows: ["okok yay"]
+    # workflows: ["Build portable Linux packages"]
+    types:
+      - completed
+
+permissions:
+  contents: write
 
 jobs:
   generate_release_matrix:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     outputs:
       release_matrix: ${{ steps.configure.outputs.release_matrix }}
+      today_date: ${{ steps.configure.outputs.today_date }}
     steps:
       - name: Checking out repository
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
+      - name: Retrieve asset metadata
+        uses: shadowmoose/Github-Release-Data-Action@7cab39a3e1aab55342775ec65908ba28262a3b39
+        id: release_json
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          owner: geomin12
+          repo: TheRock
+          releaseTag: 'nightly-release'
+
       - name: Generating release matrix
         id: configure
         env:
-          ASSET_FILES: ${{ toJSON(github.event.release.assets) }}
+          ASSET_FILES: ${{ steps.release_json.outputs.data_json }}
         run: python ./build_tools/configure_release_matrix.py
 
 
   test_release_packages:
-    runs-on: linux-mi300-1gpu-ossci-rocm
+    runs-on: ${{ matrix.target.test-runs-on }}
     needs: generate_release_matrix
     strategy:
       matrix:
-        file_name: ${{ fromJSON(needs.generate_release_matrix.outputs.release_matrix) }}
+        target: ${{ fromJSON(needs.generate_release_matrix.outputs.release_matrix) }}
     env:
-      FILE_NAME: ${{ matrix.file_name }}
+      FILE_NAME: ${{ matrix.target.file_name }}
       VENV_DIR: ${{ github.workspace }}/.venv
       THEROCK_BIN_DIR: ${{ github.workspace }}/artifacts/output_dir/bin
-      TAG_NAME: ${{ github.event.release.tag_name }}
+      TAG_NAME: 'nightly-release'
     steps:
       - name: Checkout Repository
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
       # Downloading release tag assets to artifacts directory
-      # For now, we will only run tests on gfx942 since we only have one test machine for gfx942
       - name: Download release artifacts
-        uses: robinraju/release-downloader@v1
+        uses: robinraju/release-downloader@daf26c55d821e836577a15f77d86ddc078948b05
         with:
           tag: ${{ env.TAG_NAME }}
           fileName: ${{ env.FILE_NAME }}
@@ -89,14 +105,14 @@ jobs:
         if: '!cancelled()'
         run: |
           echo "" >> ${{ github.workspace }}/test_notes.md
-          echo "Test results for ${{ env.FILE_NAME }}" >> ${{ github.workspace }}/test_notes.md
-          echo "* SANITY_CHECK_PASS=${{ steps.sanity-check.outcome }}" >> ${{ github.workspace }}/test_notes.md
-          echo "* HIPBLASLT_CHECK_PASS=${{ steps.hipblaslt-tests.outcome }}" >> ${{ github.workspace }}/test_notes.md
-          echo "* ROCBLAS_CHECK_PASS=${{ steps.rocblas-tests.outcome }}" >> ${{ github.workspace }}/test_notes.md
+          echo "[${{ needs.generate_release_matrix.outputs.today_date }}] Test results for ${{ env.FILE_NAME }}" >> ${{ github.workspace }}/test_notes.md
+          echo "* SANITY_CHECK=${{ steps.sanity-check.outcome }}" >> ${{ github.workspace }}/test_notes.md
+          echo "* HIPBLASLT_CHECK=${{ steps.hipblaslt-tests.outcome }}" >> ${{ github.workspace }}/test_notes.md
+          echo "* ROCBLAS_CHECK=${{ steps.rocblas-tests.outcome }}" >> ${{ github.workspace }}/test_notes.md
 
       - name: Report test notes to the release body
         if: '!cancelled()'
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@c95fe1489396fe8a9eb87c0abf8aa5b2ef267fda
         with:
           tag_name: ${{ env.TAG_NAME }}
           append_body: true

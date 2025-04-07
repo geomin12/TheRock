@@ -1,0 +1,11 @@
+name: "okok yay"
+
+on:
+  workflow_dispatch:
+
+jobs:
+  generate_release_matrix:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checking out repository
+        run: echo helloworld
