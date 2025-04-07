@@ -75,6 +75,16 @@ jobs:
     with:
       amdgpu_families: ${{ matrix.families.target }}
 
+  test:
+    name: ok
+    needs: [setup]
+    runs-on: ubuntu-latest
+    steps:
+      - name: echo
+        run: |
+          echo fromJSON(needs.setup.outputs.test_linux_amdgpu_families)
+          echo needs.setup.outputs.test_linux_amdgpu_families
+
   test_linux_packages:
     needs: [setup, build_linux_packages]
     name: Test Linux Packages
