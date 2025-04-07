@@ -19,6 +19,10 @@ on:
         description: Windows families to run tests for.
         value: ${{ jobs.setup.outputs.test_windows_amdgpu_families }}
 
+permissions:
+  pull-requests: write
+  contents: write
+
 jobs:
   setup:
     runs-on: ubuntu-24.04
@@ -43,7 +47,7 @@ jobs:
       - name: "Adding default PR labels"
         if: ${{ github.event.action == 'opened' && github.event.pull_request }}
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ github.token }}
           PR_NUMBER: ${{ github.event.number }}
         run: |
           gh pr edit ${PR_NUMBER} --add-label "gfx94X-linux"
@@ -53,7 +57,7 @@ jobs:
       - name: Set PR_LABELS variable with labels assigned to pull request
         if: ${{ github.event.pull_request }} # only set PR labels var if this is a pull request
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ github.token }}
           PR_NUMBER: ${{ github.event.number }}
         run: |
           echo "PR_LABELS=$(gh pr view ${PR_NUMBER} --json labels)" >> $GITHUB_ENV
