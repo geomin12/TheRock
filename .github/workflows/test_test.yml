@@ -1,7 +1,9 @@
 name: "okok yay"
 
 on:
-  workflow_dispatch:
+  push:
+    branches:
+      - release-test
 
 jobs:
   generate_release_matrix:
